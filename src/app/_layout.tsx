@@ -6,6 +6,7 @@ import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { Stack } from 'expo-router';
 
 import { Colors } from '@/constants/theme';
+import { NotesProvider } from '@/store/notes-context';
 
 export default function RootLayout() {
   const scheme = useColorScheme();
@@ -18,14 +19,16 @@ export default function RootLayout() {
 
   return (
     <GestureHandlerRootView style={{ flex: 1, backgroundColor: Colors[themeKey].background }}>
-      <StatusBar style={themeKey === 'dark' ? 'light' : 'dark'} />
-      <Stack
-        screenOptions={{
-          headerShown: false,
-          contentStyle: { backgroundColor: Colors[themeKey].background },
-          animation: 'fade',
-        }}
-      />
+      <NotesProvider>
+        <StatusBar style={themeKey === 'dark' ? 'light' : 'dark'} />
+        <Stack
+          screenOptions={{
+            headerShown: false,
+            contentStyle: { backgroundColor: Colors[themeKey].background },
+            animation: 'fade',
+          }}
+        />
+      </NotesProvider>
     </GestureHandlerRootView>
   );
 }

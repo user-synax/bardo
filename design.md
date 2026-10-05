@@ -111,32 +111,28 @@ unpin) → title → body preview. Grid: `flex: 1` cells paired in rows
 (max 8 × 30ms), exit `FadeOut` 160ms, `LinearTransition` 220ms on reorder.
 
 ### NoteEditorSheet
-Modal + dimmed backdrop (`rgba(43,33,24,0.45)`, `FadeIn` 160ms) +
-`SlideInDown` 260ms sheet (top radius `large`). Tint dots (28dp, 2dp border,
-`accent` ring when active), pin toggle, 22/800 title field (autofocus),
-16sp body (`minHeight` 180), Delete (`dangerSoft`) + Save (`primary`).
-Mounted with `key={note.id}` so draft state is always fresh — never sync
-props in effects. Empty title + body on save discards silently.
+Full-screen route (`src/app/note/[id].tsx`, `id === 'new'` for creation).
+Back arrow (router back; hardware back pops natively) + pin toggle + delete
+(confirm `Alert`; unsaved-new just goes back) in the header, live
+`Edited {date}` caption, tint dots, 28/800 title field (autofocus on new),
+16sp body filling the screen. **Auto-save**: 400ms-debounced store write per
+keystroke batch — creates the row on first content, updates after; backing
+out of an empty new note creates nothing. State: `NotesProvider`
+(`src/store/notes-context.tsx`) wraps the Stack so list + editor share one
+`useNotes` instance. Invalid ids `<Redirect href="/" />`.
 
-### TodoItem (`src/components/todos/TodoItem.tsx`)
-Swipeable row (`friction 2`, no overshoot, full-swipe deletes): 28dp checkbox
-(`success` fill + ✓ when done) → title/notes → priority + due pills.
-Due labels via `describeDueDate`: Today / Tomorrow / `Mar d` / Overdue
-(`danger`). Same motion spec as NoteCard.
-
-### Composer
-Bottom input + 44dp circular add button (`primary` when non-empty).
-`focusKey` prop focuses the input (bottom-bar + on Lists tab).
-
-### FilterTabs
-3-segment pill on `backgroundSelected`: All / Active / Done with live counts.
-Active segment is a `backgroundElement` pill with shadow.
+### Lists components — PARKED
+Lists UI was removed from the MVP. `src/components/todos/` (TodoItem,
+Composer, FilterTabs, EditSheet, EmptyState) plus `src/hooks/use-todos.ts`,
+`src/lib/todo-storage.ts`, `src/types/todo.ts` remain in the tree unused and
+still typecheck. The motion/haptic specs for them live in git history; see
+PRD §4.4 for their return.
 
 ### BottomBar (`src/components/BottomBar.tsx`)
-`backgroundSelected`, radius 30, side margins 20. Active tab: icon in
-`accentSoft` rounded wash + `accent` label; inactive: `textSecondary`.
-Center FAB 76dp `fab` circle with 40dp + glyph, raised −44. Tab switches use
-`selection`, + uses `impact Medium`.
+`backgroundSelected`, radius 30, side margins 20. Notes tab (icon in
+`accentSoft` wash + `accent` label), center FAB 76dp `fab` circle with 40dp +
+glyph raised −44, spacer slot keeps the FAB optically centered. + uses
+`impact Medium` and routes to `/note/new`.
 
 ## 6. Motion
 
@@ -144,16 +140,16 @@ Center FAB 76dp `fab` circle with 40dp + glyph, raised −44. Tab switches use
 | ---------------- | -------------------------------------------------- |
 | Row enter        | `FadeInDown` 220ms, stagger ≤ 8 × 30ms             |
 | Row exit/reorder | `FadeOut` 160ms / `LinearTransition` 220ms         |
-| Sheet            | `SlideInDown` 260ms `dampingRatio(1)` + fade       |
+| Screen transition | Stack `fade` (list ⇄ full-screen editor)            |
 | Pressed          | opacity 0.92 + scale 0.99 (cards), 0.96 (buttons)   |
-| Persist          | 250ms debounce after last mutation                 |
+| Persist          | 250ms debounce after last list mutation; 400ms auto-save in editor |
 
 ## 7. Haptics (`expo-haptics`)
 
-- `impact Light` — todo checkbox toggle
-- `impact Medium` — create (+ button, composer submit)
-- `selection` — tabs, filters, chips, icon toggles, pin
-- `notification Success` — save; `Warning` — delete / clear-completed
+- `impact Light` — pin toggle
+- `impact Medium` — create (+ button opens `/note/new`)
+- `selection` — layout toggle, chips, icon buttons, tint dots
+- `notification Success` — (reserved) explicit saves; `Warning` — delete
 
 ## 8. Iconography (`@expo/vector-icons`)
 

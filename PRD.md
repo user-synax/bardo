@@ -12,27 +12,28 @@ cream-paper UI, Android-first, fully offline, private by default.
 - **Non-users (for now):** teams, sync-across-devices seekers, markdown /
   rich-text power users.
 
-## 3. Status quo (shipped — v1.1)
+## 3. Status quo (shipped — v1.2, notes-only MVP)
 
-### Notes tab (default)
+### Notes tab (only tab)
 - 2-column grid / 1-column list (toggle live in header).
 - Search across title + body with `RESULTS (n)` view + clear button.
 - Pin / unpin (card bookmark + editor toggle); `PINNED` / `OTHERS`
   collapsible sections, pinned sorted by recency.
-- Note editor bottom sheet: title, body, 5 tints (cream/sage/peach/sky/lilac),
-  pin, delete, save. Empty draft discards silently.
+- **Full-screen editor** (`/note/[id]`, `/note/new`): back arrow, pin,
+  delete (confirm), live `Edited …` caption, 5 tints
+  (cream/sage/peach/sky/lilac). **Auto-save** — 400ms-debounced write per
+  keystroke batch; backing out of an empty new note creates nothing.
 - Persisted locally (`bardo.notes.v1`, AsyncStorage).
 
-### Lists tab
-- Add / complete / delete / edit tasks; title + notes + priority
-  (low/medium/high) + due date (None/Today/Tomorrow/Next wk).
-- All / Active / Done filter with counts, progress bar, clear-completed.
-- Swipe-to-delete, haptics, Reanimated row motion.
-- Persisted locally (`bardo.todos.v1`, AsyncStorage).
-
 ### Shell
-- Bottom bar (Notes | + | Lists), context-aware + (new note / focus composer).
+- Bottom bar (Notes + raised +), + routes to `/note/new`.
 - Cream light + dark cocoa themes follow system; splash + root bg cream.
+
+### Parked (code kept, UI removed)
+- Lists tab: `src/components/todos/`, `src/hooks/use-todos.ts`,
+  `src/lib/todo-storage.ts`, `src/types/todo.ts` remain in-tree and
+  typecheck. Was: add/complete/delete/edit tasks, priority + due dates,
+  filters, swipe-to-delete. Return planned in §4.4.
 
 ## 4. Planned features
 
@@ -67,7 +68,8 @@ cream-paper UI, Android-first, fully offline, private by default.
 - [ ] Explicit warning: storage is **unencrypted** — users must not treat it
   as a password manager (throws of `MONGODB_URI=` strings seen in testing).
 
-### 4.4 Lists upgrades (P2)
+### 4.4 Lists return (P2 — parked code exists, see §3)
+- [ ] Restore Lists tab + bottom-bar slot; re-christen tab label if needed.
 - [ ] Multiple lists (Groceries, Study…) + per-list colors.
 - [ ] Reminders / due-time notifications (`expo-notifications`).
 - [ ] Recurring tasks.
@@ -100,7 +102,8 @@ rows — change to repair-and-keep before adding fields users care about).
 ## 7. Success metrics
 
 - Cold start to interactive < 1.5s on mid Android.
-- Note create → saved < 2 taps; task complete = 1 tap.
+- Note create → visible in list < 1 tap after back; zero lost keystrokes
+  (auto-save covers backgrounding mid-typing).
 - Zero data-loss reports across updates (storage keys versioned, never
   renamed without migration).
 - Rating prompt only after 7-day retention (post-P2).

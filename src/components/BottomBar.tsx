@@ -5,45 +5,20 @@ import { Pressable, StyleSheet, Text, View } from 'react-native';
 
 import type { Theme } from '@/constants/theme';
 
-export type HomeTab = 'notes' | 'lists';
-
 type Props = {
-  tab: HomeTab;
   theme: Theme;
-  onTab: (t: HomeTab) => void;
   onPlus: () => void;
 };
 
-function BottomBarInner({ tab, theme, onTab, onPlus }: Props) {
-  const pick = (t: HomeTab) => {
-    if (tab !== t) {
-      void Haptics.selectionAsync();
-      onTab(t);
-    }
-  };
-
+function BottomBarInner({ theme, onPlus }: Props) {
   return (
     <View style={[styles.bar, { backgroundColor: theme.backgroundSelected }]}>
-      <Pressable onPress={() => pick('notes')} style={styles.item}>
-        <View
-          style={[
-            styles.iconWrap,
-            tab === 'notes' && { backgroundColor: theme.accentSoft },
-          ]}>
-          <MaterialIcons
-            name="description"
-            size={26}
-            color={tab === 'notes' ? theme.accent : theme.textSecondary}
-          />
+      <View style={styles.item}>
+        <View style={[styles.iconWrap, { backgroundColor: theme.accentSoft }]}>
+          <MaterialIcons name="description" size={26} color={theme.accent} />
         </View>
-        <Text
-          style={[
-            styles.label,
-            { color: tab === 'notes' ? theme.accent : theme.textSecondary },
-          ]}>
-          Notes
-        </Text>
-      </Pressable>
+        <Text style={[styles.label, { color: theme.accent }]}>Notes</Text>
+      </View>
 
       <Pressable
         onPress={() => {
@@ -54,26 +29,8 @@ function BottomBarInner({ tab, theme, onTab, onPlus }: Props) {
         <MaterialIcons name="add" size={40} color={theme.fabText} />
       </Pressable>
 
-      <Pressable onPress={() => pick('lists')} style={styles.item}>
-        <View
-          style={[
-            styles.iconWrap,
-            tab === 'lists' && { backgroundColor: theme.accentSoft },
-          ]}>
-          <MaterialIcons
-            name="checklist"
-            size={26}
-            color={tab === 'lists' ? theme.accent : theme.textSecondary}
-          />
-        </View>
-        <Text
-          style={[
-            styles.label,
-            { color: tab === 'lists' ? theme.accent : theme.textSecondary },
-          ]}>
-          Lists
-        </Text>
-      </Pressable>
+      {/* Spacer keeps the FAB optically centered like the 3-slot bar. */}
+      <View style={styles.spacer} />
     </View>
   );
 }
@@ -110,6 +67,9 @@ const styles = StyleSheet.create({
   label: {
     fontSize: 13,
     fontWeight: '700',
+  },
+  spacer: {
+    minWidth: 72,
   },
   fab: {
     width: 76,

@@ -1,28 +1,20 @@
 import { MaterialIcons } from '@expo/vector-icons';
 import * as Haptics from 'expo-haptics';
-import { useImperativeHandle, useMemo, useState } from 'react';
-import type { Ref } from 'react';
+import { useRouter } from 'expo-router';
+import { useMemo, useState } from 'react';
 import { Pressable, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { Radius, type Theme } from '@/constants/theme';
-import { useNotes } from '@/hooks/use-notes';
-import { createNote, type Note } from '@/types/note';
+import { useNotesStore } from '@/store/notes-context';
+import type { Note } from '@/types/note';
 
 import { NoteCard } from './NoteCard';
-import { NoteEditorSheet } from './NoteEditorSheet';
-
-export type NotesHomeHandle = {
-  createNew: () => void;
-};
 
 type Props = {
-  ref: Ref<NotesHomeHandle>;
   theme: Theme;
   dark: boolean;
 };
-
-type Draft = { note: Note; isNew: boolean } | null;
 
 function chunk<T>(arr: T[], size: number): T[][] {
   const out: T[][] = [];
@@ -30,21 +22,14 @@ function chunk<T>(arr: T[], size: number): T[][] {
   return out;
 }
 
-export function NotesHome({ ref, theme, dark }: Props) {
+export function NotesHome({ theme, dark }: Props) {
   const insets = useSafeAreaInsets();
-  const { pinned, others, loaded, addNote, updateNote, deleteNote, togglePin } = useNotes();
+  const router = useRouter();
+  const { pinned, others, loaded, togglePin } = useNotesStore();
   const [query, setQuery] = useState('');
   const [grid, setGrid] = useState(true);
   const [pinnedOpen, setPinnedOpen] = useState(true);
   const [othersOpen, setOthersOpen] = useState(true);
-  const [draft, setDraft] = useState<Draft>(null);
-
-  useImperativeHandle(ref, () => ({
-    createNew: () => {
-      void Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
-      setDraft({ note: createNote({ title: '', body: '' }), isNew: true });
-    },
-  }));
 
   const results = useMemo(() => {
     const q = query.trim().toLowerCase();
@@ -55,17 +40,8 @@ export function NotesHome({ ref, theme, dark }: Props) {
     );
   }, [query, pinned, others]);
 
-  const openNote = (note: Note) => setDraft({ note, isNew: false });
-
-  const saveDraft = (note: Note, patch: { title: string; body: string; pinned: boolean; tint: Note['tint'] }) => {
-    if (draft?.isNew) {
-      if (!patch.title.trim() && !patch.body.trim()) return;
-      addNote(patch);
-    } else {
-      updateNote(note.id, patch);
-    }
-    setDraft(null);
-  };
+  const openNote = (note: Note) =>
+    router.push({ pathname: '/note/[id]', params: { id: note.id } });
 
   const renderSection = (
     label: string,
@@ -243,23 +219,6 @@ export function NotesHome({ ref, theme, dark }: Props) {
           </View>
         )}
       </ScrollView>
-
-      {draft && (
-        <NoteEditorSheet
-          key={draft.note.id}
-          note={draft.note}
-          isNew={draft.isNew}
-          theme={theme}
-          dark={dark}
-          onClose={() => setDraft(null)}
-          onSave={saveDraft}
-          onDelete={(id) => {
-            deleteNote(id);
-            setDraft(null);
-          }}
-          onTogglePin={togglePin}
-        />
-      )}
     </View>
   );
 }
