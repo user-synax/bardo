@@ -1,56 +1,71 @@
-# Welcome to your Expo app 👋
+<div align="center">
+  <img src="./bardo.png" width="120" alt="Bardo logo" />
+  <h1>Bardo</h1>
+  <p>A calm, fast, beautiful notes app — cream-paper UI, Android-first, fully offline.</p>
+</div>
 
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
+## Features
+
+- **Notes** — quick capture with title + body, 5 card tints (cream, sage, peach, sky, lilac)
+- **Full-screen editor** — back, pin, delete, live "Edited …" stamp, auto-save on every keystroke (debounced)
+- **Pin + sections** — collapsible `PINNED` / `OTHERS`, pinned notes stay on top
+- **Search** — live filtering across titles and bodies with a results view
+- **Grid / list layouts** — toggle in the header, animated row transitions
+- **Cream + cocoa themes** — warm light mode, dark cocoa mode, follows the system
+- **Private by default** — everything in on-device AsyncStorage, no accounts, no network
 
 ## Get started
 
-1. Install dependencies
-
-   ```bash
-   npm install
-   ```
-
-2. Start the app
-
-   ```bash
-   npx expo start
-   ```
-
-In the output, you'll find options to open the app in a
-
-- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
-- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
-- [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
-- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
-
-You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
-
-## Get a fresh project
-
-When you're ready, run:
+Prerequisites: Node 22+, the [Expo Go](https://expo.dev/go) app on your Android device (or an Android emulator).
 
 ```bash
-npm run reset-project
+# install dependencies (this project uses bun)
+bun install
+
+# start the dev server
+bunx expo start
 ```
 
-This command will move the starter code to the **app-example** directory and create a blank **app** directory where you can start developing.
+Then press `a` for the Android emulator, or scan the QR code with Expo Go.
 
-### Other setup steps
+## Scripts
 
-- To set up ESLint for linting, run `npx expo lint`, or follow our guide on ["Using ESLint and Prettier"](https://docs.expo.dev/guides/using-eslint/)
-- If you'd like to set up unit testing, follow our guide on ["Unit Testing with Jest"](https://docs.expo.dev/develop/unit-testing/)
-- Learn more about the TypeScript setup in this template in our guide on ["Using TypeScript"](https://docs.expo.dev/guides/typescript/)
+| Command              | What it does                              |
+| -------------------- | ----------------------------------------- |
+| `bunx expo start`    | Start the dev server (use ` --android`)    |
+| `bunx tsc --noEmit`  | Typecheck                                 |
+| `bunx eslint src/`   | Lint                                      |
+| `bunx expo export`   | Production bundle check (`--platform android`) |
 
-## Learn more
+This project follows the rules in `AGENTS.md`: use `bunx expo install <pkg>`
+for SDK-compatible native modules, and run lint + typecheck before calling
+work done.
 
-To learn more about developing your project with Expo, look at the following resources:
+## Project structure
 
-- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
+```
+src/
+  app/               Expo Router screens (index = notes home, note/[id] = editor)
+  components/notes/  NotesHome, NoteCard (todos/ is parked for later)
+  store/             NotesProvider — one shared useNotes instance
+  hooks/             use-notes (load/save/filter), theme helpers
+  lib/               AsyncStorage persistence, date formatting
+  constants/         Cream/cocoa theme tokens (see design.md)
+design.md            Full design system (tokens, components, motion, haptics)
+PRD.md               Product requirements + roadmap (sort, settings, biometrics…)
+bardo.png            App logo (also wired as icon, splash, and favicon)
+```
 
-## Join the community
+## Tech stack
 
-Join our community of developers creating universal apps.
+Expo SDK 57 · React Native 0.86 · Expo Router · Reanimated · Gesture Handler ·
+AsyncStorage · Haptics · MaterialIcons — all Expo Go compatible, no dev build needed.
 
-- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
-- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
+## Roadmap
+
+Short term: sort options, settings screen (appearance), biometric app lock.
+Details live in [PRD.md](./PRD.md).
+
+## License
+
+See [LICENSE](./LICENSE).
