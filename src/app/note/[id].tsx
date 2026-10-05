@@ -14,8 +14,7 @@ import {
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { NoteTintOrder, NoteTints } from '@/constants/theme';
-import { useTheme } from '@/hooks/use-theme';
-import { useColorScheme } from '@/hooks/use-color-scheme';
+import { useTheme, useResolvedScheme } from '@/hooks/use-theme';
 import { formatNoteDate } from '@/lib/note-storage';
 import { useNotesStore } from '@/store/notes-context';
 import type { Note } from '@/types/note';
@@ -26,8 +25,7 @@ export default function NoteEditorScreen() {
   const { id } = useLocalSearchParams<{ id: string }>();
   const router = useRouter();
   const theme = useTheme();
-  const scheme = useColorScheme();
-  const dark = scheme === 'dark';
+  const dark = useResolvedScheme() === 'dark';
   const insets = useSafeAreaInsets();
   const { notes, addNote, updateNote, deleteNote } = useNotesStore();
 
@@ -72,10 +70,10 @@ export default function NoteEditorScreen() {
       goBack();
       return;
     }
-    Alert.alert('Delete note?', 'This note will be permanently removed.', [
+    Alert.alert('Move to Trash?', 'You can restore it within 30 days from Settings → Trash.', [
       { text: 'Cancel', style: 'cancel' },
       {
-        text: 'Delete',
+        text: 'Move to trash',
         style: 'destructive',
         onPress: () => {
           deleteNote(savedId);

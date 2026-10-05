@@ -1,14 +1,13 @@
 /**
- * Learn more about light and dark modes:
- * https://docs.expo.dev/guides/color-schemes/
+ * App theme, resolved through Settings (system / cream / cocoa override).
  */
 
-import { Colors } from '@/constants/theme';
-import { useColorScheme } from '@/hooks/use-color-scheme';
+import { useSettingsStore } from '@/store/settings-context';
 
 export function useTheme() {
-  const scheme = useColorScheme();
-  const theme = scheme === 'unspecified' ? 'light' : scheme;
+  return useSettingsStore().theme;
+}
 
-  return Colors[theme];
+export function useResolvedScheme() {
+  return useSettingsStore().mode;
 }

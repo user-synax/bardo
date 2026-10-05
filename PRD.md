@@ -24,6 +24,11 @@ cream-paper UI, Android-first, fully offline, private by default.
   (cream/sage/peach/sky/lilac). **Auto-save** — 400ms-debounced write per
   keystroke batch; backing out of an empty new note creates nothing.
 - Persisted locally (`bardo.notes.v1`, AsyncStorage).
+- Trash: delete moves notes to Trash (restorable 30 days, auto-purged);
+  Trash screen via Settings → Trash with restore / delete-forever / empty.
+- Settings (gear): theme mode (System / Cream / Cocoa, live override),
+  biometric app lock (fingerprint/face + Immediately/1min/5min timeout),
+  trash entry, about. See `design.md`.
 
 ### Shell
 - Bottom bar (Notes + raised +), + routes to `/note/new`.
@@ -47,26 +52,23 @@ cream-paper UI, Android-first, fully offline, private by default.
 - [ ] Duplicate note.
 
 ### 4.2 Appearance (P1)
-- [ ] Settings screen (behind gear icon): theme mode (System / Cream /
-  Cocoa), accent choice, font-size (S/M/L), reduce-motion toggle honoring
-  system setting.
+- [x] Settings screen with theme mode (System / Cream / Cocoa).
+- [ ] Accent choice, font-size (S/M/L), reduce-motion toggle.
 - [ ] More card tints + custom color.
 - [ ] Grid density option (2 vs 3 columns on large screens).
 
 ### 4.3 Security & privacy (P1)
-- [ ] **Biometric app lock** (`expo-local-authentication`): Face / fingerprint
-  / device credential on cold start + from background after N minutes.
-  - Setting: on/off, auto-lock timeout (immediately / 1 min / 5 min).
-  - Fallback: device PIN/pattern via `local-authentication` device-credential
-    path; graceful message on devices without hardware.
-  - Must keep working fully offline; **never** store notes/todos in
-    SecureStore (too small) — lock is a gate, data stays in AsyncStorage.
-  - Note: `expo-local-authentication` needs a dev build (not in Expo Go
-    for production testing); add `expo install expo-local-authentication`.
-- [ ] Hide-content mode: blur cards / require auth per-note (locked notes).
+- [x] **Biometric app lock** (`expo-local-authentication`): fingerprint/face
+  gate on cold start + background timeout (Immediately/1 min/5 min),
+  auto-prompt, fail-closed when biometrics unenrolled. FaceID permission
+  string configured for iOS builds.
+- [x] Trash with 30-day restore + auto-purge.
+- [ ] Hide-content mode / per-note locked notes.
 - [ ] Export backup (JSON) + import; share note as text.
-- [ ] Explicit warning: storage is **unencrypted** — users must not treat it
-  as a password manager (throws of `MONGODB_URI=` strings seen in testing).
+- Note: storage stays **unencrypted** AsyncStorage (lock is a gate, and
+  SecureStore is too small for notes) — users must not treat the app as a
+  password manager. Device PIN/pattern fallback comes free with the default
+  `authenticateAsync` policy.
 
 ### 4.4 Lists return (P2 — parked code exists, see §3)
 - [ ] Restore Lists tab + bottom-bar slot; re-christen tab label if needed.

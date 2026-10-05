@@ -9,6 +9,8 @@
 - **Notes** — quick capture with title + body, 5 card tints (cream, sage, peach, sky, lilac)
 - **Full-screen editor** — back, pin, delete, live "Edited …" stamp, auto-save on every keystroke (debounced)
 - **Pin + sections** — collapsible `PINNED` / `OTHERS`, pinned notes stay on top
+- **Trash** — soft delete, restore, auto-purge after 30 days
+- **Settings** — Cream/Cocoa/System theme, biometric app lock, trash manager
 - **Search** — live filtering across titles and bodies with a results view
 - **Grid / list layouts** — toggle in the header, animated row transitions
 - **Cream + cocoa themes** — warm light mode, dark cocoa mode, follows the system

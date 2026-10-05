@@ -1,8 +1,27 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
+import { NoteTintOrder } from '@/constants/theme';
 import type { Note } from '@/types/note';
 
 const STORAGE_KEY = 'bardo.notes.v1';
+const TRASH_TTL_MS = 30 * 24 * 60 * 60 * 1000;
+
+function repair(raw: unknown): Note | null {
+  if (typeof raw !== 'object' || raw === null) return null;
+  const n = raw as Partial<Note>;
+  if (typeof n.id !== 'string' || typeof n.title !== 'string') return null;
+  const now = Date.now();
+  return {
+    id: n.id,
+    title: n.title,
+    body: typeof n.body === 'string' ? n.body : '',
+    pinned: n.pinned === true,
+    tint: NoteTintOrder.includes(n.tint as Note['tint']) ? (n.tint as Note['tint']) : 'cream',
+    deletedAt: typeof n.deletedAt === 'number' ? n.deletedAt : null,
+    createdAt: typeof n.createdAt === 'number' ? n.createdAt : now,
+    updatedAt: typeof n.updatedAt === 'number' ? n.updatedAt : now,
+  };
+}
 
 export async function loadNotes(): Promise<Note[]> {
   try {
@@ -10,13 +29,12 @@ export async function loadNotes(): Promise<Note[]> {
     if (!raw) return [];
     const parsed = JSON.parse(raw) as unknown;
     if (!Array.isArray(parsed)) return [];
-    return parsed.filter(
-      (n): n is Note =>
-        typeof n === 'object' &&
-        n !== null &&
-        typeof (n as Note).id === 'string' &&
-        typeof (n as Note).title === 'string',
-    );
+    const now = Date.now();
+    return parsed
+      .map(repair)
+      .filter((n): n is Note => n !== null)
+      // Permanently drop trash older than 30 days.
+      .filter((n) => !(n.deletedAt !== null && now - n.deletedAt > TRASH_TTL_MS));
   } catch {
     return [];
   }

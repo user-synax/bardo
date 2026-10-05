@@ -45,8 +45,28 @@ export function useNotes() {
     );
   }, []);
 
+  /** Soft delete — moves to trash, restorable for 30 days. */
   const deleteNote = useCallback((id: string) => {
+    const now = Date.now();
+    setNotes((prev) =>
+      prev.map((n) => (n.id === id ? { ...n, deletedAt: now, updatedAt: now } : n)),
+    );
+  }, []);
+
+  const restoreNote = useCallback((id: string) => {
+    setNotes((prev) =>
+      prev.map((n) =>
+        n.id === id ? { ...n, deletedAt: null, updatedAt: Date.now() } : n,
+      ),
+    );
+  }, []);
+
+  const deleteForever = useCallback((id: string) => {
     setNotes((prev) => prev.filter((n) => n.id !== id));
+  }, []);
+
+  const emptyTrash = useCallback(() => {
+    setNotes((prev) => prev.filter((n) => n.deletedAt === null));
   }, []);
 
   const togglePin = useCallback((id: string) => {
@@ -55,11 +75,34 @@ export function useNotes() {
     );
   }, []);
 
-  const sorted = useMemo(() => {
-    const pinned = notes.filter((n) => n.pinned);
-    const others = notes.filter((n) => !n.pinned);
-    return { pinned, others };
-  }, [notes]);
+  const live = useMemo(() => notes.filter((n) => n.deletedAt === null), [notes]);
 
-  return { notes, ...sorted, loaded, addNote, updateNote, deleteNote, togglePin };
+  const sorted = useMemo(() => {
+    const pinned = live.filter((n) => n.pinned);
+    const others = live.filter((n) => !n.pinned);
+    return { pinned, others };
+  }, [live]);
+
+  const trashed = useMemo(
+    () =>
+      notes
+        .filter((n) => n.deletedAt !== null)
+        .sort((a, b) => (b.deletedAt ?? 0) - (a.deletedAt ?? 0)),
+    [notes],
+  );
+
+  return {
+    notes: live,
+    ...sorted,
+    trashed,
+    trashCount: trashed.length,
+    loaded,
+    addNote,
+    updateNote,
+    deleteNote,
+    restoreNote,
+    deleteForever,
+    emptyTrash,
+    togglePin,
+  };
 }

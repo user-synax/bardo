@@ -6,6 +6,8 @@ export type Note = {
   body: string;
   pinned: boolean;
   tint: NoteTint;
+  /** Set when soft-deleted (trash). Null = live. */
+  deletedAt: number | null;
   createdAt: number;
   updatedAt: number;
 };
@@ -29,6 +31,7 @@ export function createNote(input: NewNoteInput): Note {
     body: (input.body ?? '').trim(),
     pinned: input.pinned ?? false,
     tint: input.tint ?? 'cream',
+    deletedAt: null,
     createdAt: now,
     updatedAt: now,
   };

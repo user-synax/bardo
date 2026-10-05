@@ -133,7 +133,10 @@ export function NotesHome({ theme, dark }: Props) {
             </Pressable>
             <Pressable
               hitSlop={12}
-              onPress={() => void Haptics.selectionAsync()}
+              onPress={() => {
+                void Haptics.selectionAsync();
+                router.push('/settings');
+              }}
               style={styles.iconBtn}>
               <MaterialIcons name="settings" size={24} color={theme.text} />
             </Pressable>

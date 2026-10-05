@@ -128,6 +128,25 @@ Composer, FilterTabs, EditSheet, EmptyState) plus `src/hooks/use-todos.ts`,
 still typecheck. The motion/haptic specs for them live in git history; see
 PRD §4.4 for their return.
 
+### AppLockGate (`src/components/AppLock.tsx`)
+Wraps the Stack. When `biometricEnabled`, covers the app with a lock screen
+(logo, fingerprint CTA) until `LocalAuthentication.authenticateAsync`
+succeeds; auto-prompts on appearance. Re-trips when returning from background
+after the timeout (`immediate` / 1 min / 5 min, `lockTimeoutMs`). While
+settings load, holds a blank cream frame — content never flashes. Fail-closed:
+if biometrics become unenrolled, Settings auto-disables the lock.
+
+### Settings (`src/app/settings.tsx`) + Trash (`src/app/trash.tsx`)
+Settings: APPEARANCE (theme segmented System/Cream/Cocoa →
+`SettingsProvider`, `bardo.settings.v1`), SECURITY (app-lock Switch with
+live capability check + timeout chips), DATA (Trash row with count), ABOUT
+(version via `expo-constants`). Theme override flows through `useTheme()` /
+`useResolvedScheme()` — components never read the OS scheme directly.
+Trash: trashed rows (tint dot, deleted date, Restore pill, delete-forever),
+Empty-trash confirm, auto-purge > 30 days in `loadNotes`. Note type carries
+`deletedAt: number | null`; the loader repairs old rows (missing fields get
+defaults, never dropped).
+
 ### BottomBar (`src/components/BottomBar.tsx`)
 `backgroundSelected`, radius 30, side margins 20. Notes tab (icon in
 `accentSoft` wash + `accent` label), center FAB 76dp `fab` circle with 40dp +

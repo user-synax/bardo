@@ -4,13 +4,11 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { BottomBar } from '@/components/BottomBar';
 import { NotesHome } from '@/components/notes/NotesHome';
-import { useTheme } from '@/hooks/use-theme';
-import { useColorScheme } from '@/hooks/use-color-scheme';
+import { useTheme, useResolvedScheme } from '@/hooks/use-theme';
 
 export default function HomeScreen() {
   const theme = useTheme();
-  const scheme = useColorScheme();
-  const dark = scheme === 'dark';
+  const dark = useResolvedScheme() === 'dark';
   const insets = useSafeAreaInsets();
   const router = useRouter();
 
