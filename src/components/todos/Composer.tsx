@@ -1,5 +1,5 @@
 import * as Haptics from 'expo-haptics';
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
 
 import { Radius, type Theme } from '@/constants/theme';
@@ -7,10 +7,17 @@ import { Radius, type Theme } from '@/constants/theme';
 type Props = {
   theme: Theme;
   onAdd: (title: string) => void;
+  /** Increment to focus the input (e.g. bottom-bar + on the Lists tab). */
+  focusKey?: number;
 };
 
-export function Composer({ theme, onAdd }: Props) {
+export function Composer({ theme, onAdd, focusKey = 0 }: Props) {
   const [value, setValue] = useState('');
+  const inputRef = useRef<TextInput>(null);
+
+  useEffect(() => {
+    if (focusKey > 0) inputRef.current?.focus();
+  }, [focusKey]);
 
   const submit = () => {
     const title = value.trim();
@@ -30,6 +37,7 @@ export function Composer({ theme, onAdd }: Props) {
         },
       ]}>
       <TextInput
+        ref={inputRef}
         value={value}
         onChangeText={setValue}
         onSubmitEditing={submit}

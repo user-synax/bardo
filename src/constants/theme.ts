@@ -22,6 +22,8 @@ export const Colors = {
     danger: '#C14A3A',
     dangerSoft: '#F7DDD6',
     success: '#5F7A5A',
+    fab: '#A87B4F',
+    fabText: '#FFF8EC',
   },
   dark: {
     text: '#F5EBDD',
@@ -37,6 +39,8 @@ export const Colors = {
     danger: '#E07864',
     dangerSoft: '#3E211B',
     success: '#9DB89A',
+    fab: '#C99A68',
+    fabText: '#221A12',
   },
 } as const;
 
@@ -47,6 +51,34 @@ export const PriorityColors: Record<'low' | 'medium' | 'high', { light: string; 
   low: { light: '#6B8E6B', dark: '#9DB89A' },
   medium: { light: '#C98A1B', dark: '#E0A458' },
   high: { light: '#C14A3A', dark: '#E07864' },
+};
+
+export type NoteTint = 'cream' | 'sage' | 'peach' | 'sky' | 'lilac';
+
+export const NoteTintOrder: NoteTint[] = ['cream', 'sage', 'peach', 'sky', 'lilac'];
+
+/** Card background/border per tint + color mode. `cream` blends into the card surface. */
+export const NoteTints: Record<NoteTint, { light: { bg: string; border: string }; dark: { bg: string; border: string } }> = {
+  cream: {
+    light: { bg: '#FFFDF7', border: '#FFFDF7' },
+    dark: { bg: '#221A12', border: '#221A12' },
+  },
+  sage: {
+    light: { bg: '#E7EDD6', border: '#A9BE9A' },
+    dark: { bg: '#26301F', border: '#4A5A3E' },
+  },
+  peach: {
+    light: { bg: '#F5E3CE', border: '#D9A97E' },
+    dark: { bg: '#33251A', border: '#6B4E33' },
+  },
+  sky: {
+    light: { bg: '#DEE9F2', border: '#9AB8D2' },
+    dark: { bg: '#1E2A36', border: '#3E5468' },
+  },
+  lilac: {
+    light: { bg: '#E7E1F0', border: '#B3A4CF' },
+    dark: { bg: '#282335', border: '#544A70' },
+  },
 };
 
 export const Fonts = Platform.select({
